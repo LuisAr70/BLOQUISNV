@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#F1F0FC">
+  <title>BLOCK</title>
+  <style>
+    /* ==========================================
+       BLOCK — CSS COMPLETO
+       Home + cubos 3D + tablero + cuadrícula 2x4
+       ========================================== */
+
+    :root {
+      --background: #F1F0FC;
+      --text: #292D3B;
+      --secondary-text: #687084;
+      --white: #FFFFFF;
+
+      --blue-fill: #C2E8FF;
+      --blue-stroke: #0075BC;
+      --blue-light: #B8E4FF;
+      --blue-dark: #82CCF5;
+
+      --purple-fill: #BBAAEE;
+      --purple-stroke: #5825F0;
+      --purple-light: #D7C9FF;
+      --purple-dark: #9A8AFF;
+
+      --pink-fill: #F9B0F9;
+      --pink-stroke: #B200B2;
+      --pink-light: #FFB8F8;
+      --pink-dark: #F080E8;
+
+      --red-fill: #F78F8F;
+      --red-stroke: #C40000;
+      --red-light: #FFD1D1;
+      --red-dark: #FF6A6A;
+
+      --teal-fill: #9EECE6;
+      --teal-stroke: #007A74;
+      --teal-light: #C6F8F4;
+      --teal-dark: #68D3CB;
+
+      --orange-fill: #FFC49C;
+      --orange-stroke: #A34200;
+      --orange-light: #FFDFCA;
+      --orange-dark: #FFA96E;
+
+      --green-fill: #A9E0B8;
+      --green-stroke: #006C1D;
+      --green-light: #BFF6CE;
+      --green-dark: #7CCB92;
+
+      --yellow-fill: #F6D66F;
+      --yellow-stroke: #C69B24;
+      --yellow-light: #FFF099;
+      --yellow-dark: #E8BD45;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Inter, Arial, sans-serif;
+      color: var(--text);
+      background: var(--background);
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    /* PANTALLA PRINCIPAL (Optimizada para iPhone Pro y Pro Max) */
+    .home-screen {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      height: 100%;
+      height: 100dvh;
+      margin: 0 auto;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--background);
+      padding:
+        max(env(safe-area-inset-top, 0px), 20px)
+        max(env(safe-area-inset-right, 0px), 18px)
+        max(env(safe-area-inset-bottom, 0px), 24px)
+        max(env(safe-area-inset-left, 0px), 18px);
+    }
+
+    /* CONTENIDO CENTRAL */
+    .home-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transform: translateY(-1px);
+    }
+
+    /* LOGO BLOCK */
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 0;
+      color: var(--text);
+      font-size: 62px;
+      font-weight: 850;
+      line-height: 1;
+      letter-spacing: -4px;
+      white-space: nowrap;
+    }
+
+    .logo > span:first-child,
+    .logo > span:last-child {
+      display: inline-block;
+    }
+
+    /* La O está formada por cuatro cubos */
+    .logo-block {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 0;
+      flex: 0 0 auto;
+      width: 0.80em;
+      height: 0.80em;
+      margin: 0 0.04em;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .logo-cube {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--cube-base);
+      border: none;
+      box-shadow: none;
+    }
+
+    /* TEXTO DESCRIPTIVO */
+    .tagline {
+      margin: 20px 0 0;
+      color: var(--secondary-text);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    /* BOTÓN JUGAR */
+    .play-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 195px;
+      height: 50px;
+      margin-top: 38px;
+      padding: 0;
+      border: none;
+      border-radius: 28px;
+      color: var(--white);
+      background: linear-gradient(110deg, #817FEA, #A2B3F3);
+      box-shadow: 0 9px 17px rgba(120, 119, 220, 0.25);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .play-button:hover {
+      box-shadow: 0 11px 20px rgba(120, 119, 220, 0.3);
+    }
+
+    .play-button:active {
+      transform: scale(0.97);
+    }
+
+    .play-icon {
+      font-size: 11px;
+    }
+
+    /* GRUPOS DECORATIVOS */
+    .cube-cluster {
+      position: absolute;
+      display: grid;
+      gap: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .cluster-top-left {
+      top: max(6%, calc(env(safe-area-inset-top, 0px) + 16px));
+      left: 0;
+      grid-template-columns: 36px;
+      grid-auto-rows: 36px;
+    }
+
+    .cluster-top-right {
+      top: max(7%, calc(env(safe-area-inset-top, 0px) + 20px));
+      right: 4px;
+      grid-template-columns: repeat(4, 36px);
+      grid-auto-rows: 36px;
+    }
+
+    .cluster-bottom-left {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(6, 36px);
+      grid-template-rows: repeat(8, 36px);
+      gap: 0;
+      width: max-content;
+      height: max-content;
+    }
+
+    .cluster-bottom-right {
+      right: 6%;
+      bottom: 19%;
+      grid-template-columns: 36px;
+      grid-auto-rows: 36px;
+    }
+
+    /* Distribución irregular del grupo inferior izquierdo */
+    .cluster-bottom-left .cube:nth-child(1)  { grid-area: 2 / 2; }
+    .cluster-bottom-left .cube:nth-child(2)  { grid-area: 2 / 1; }
+    .cluster-bottom-left .cube:nth-child(3)  { grid-area: 3 / 1; }
+    .cluster-bottom-left .cube:nth-child(4)  { grid-area: 4 / 1; }
+    .cluster-bottom-left .cube:nth-child(5)  { grid-area: 5 / 1; }
+    .cluster-bottom-left .cube:nth-child(6)  { grid-area: 6 / 1; }
+    .cluster-bottom-left .cube:nth-child(7)  { grid-area: 7 / 1; }
+    .cluster-bottom-left .cube:nth-child(8)  { grid-area: 8 / 1; }
+    .cluster-bottom-left .cube:nth-child(9)  { grid-area: 3 / 2; }
+    .cluster-bottom-left .cube:nth-child(10) { grid-area: 3 / 3; }
+    .cluster-bottom-left .cube:nth-child(11) { grid-area: 4 / 2; }
+    .cluster-bottom-left .cube:nth-child(12) { grid-area: 4 / 3; }
+    .cluster-bottom-left .cube:nth-child(13) { grid-area: 5 / 2; }
+    .cluster-bottom-left .cube:nth-child(14) { grid-area: 6 / 2; }
+    .cluster-bottom-left .cube:nth-child(15) { grid-area: 7 / 2; }
+    .cluster-bottom-left .cube:nth-child(16) { grid-area: 8 / 2; }
+    .cluster-bottom-left .cube:nth-child(17) { grid-area: 8 / 3; }
+    .cluster-bottom-left .cube:nth-child(18) { grid-area: 8 / 4; }
+    .cluster-bottom-left .cube:nth-child(19) { grid-area: 7 / 5; }
+    .cluster-bottom-left .cube:nth-child(20) { grid-area: 8 / 5; }
+    .cluster-bottom-left .cube:nth-child(21) { grid-area: 8 / 6; }
+
+    /* CUBOS 3D */
+    .cube {
+      --cube-base: var(--blue-fill);
+      --cube-edge: var(--blue-stroke);
+      --cube-top: var(--blue-light);
+      --cube-left: var(--blue-light);
+      --cube-bottom: var(--blue-dark);
+      --cube-right: var(--blue-dark);
+
+      --stroke: 0.7px;
+      --bevel: 20%;
+
+      position: relative;
+      display: block;
+      width: 36px;
+      height: 36px;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--cube-base);
+      border: none;
+    }
+
+    .cube,
+    .logo-cube {
+      --bevel: 20%;
+      --stroke: 0.6px;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    /* Todas las caras */
+    .cube .face,
+    .logo-cube .face {
+      position: absolute;
+      inset: 0;
+      display: block;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+
+    /* Cara superior */
+    .cube .face-top,
+    .logo-cube .face-top {
+      z-index: 1;
+      background: var(--cube-top);
+      clip-path: polygon(0 0, 100% 0, 80% 20%, 20% 20%);
+    }
+
+    /* Parte inferior */
+    .cube .face-bottom,
+    .logo-cube .face-bottom {
+      z-index: 1;
+      background: var(--cube-bottom);
+      clip-path: polygon(0 100%, 20% 80%, 80% 80%, 100% 100%);
+    }
+
+    /* Lado izquierdo */
+    .cube .face-left,
+    .logo-cube .face-left {
+      z-index: 1;
+      background: var(--cube-left);
+      clip-path: polygon(0 0, 20% 20%, 20% 80%, 0 100%);
+    }
+
+    /* Lado derecho */
+    .cube .face-right,
+    .logo-cube .face-right {
+      z-index: 1;
+      background: var(--cube-right);
+      clip-path: polygon(100% 0, 80% 20%, 80% 80%, 100% 100%);
+    }
+
+    /* Centro con contorno fino */
+    .cube .face-center,
+    .logo-cube .face-center {
+      position: absolute;
+      z-index: 2;
+      left: 20%;
+      top: 20%;
+      width: 60%;
+      height: 60%;
+      background: var(--cube-base);
+      border: 0.5px solid var(--cube-edge);
+      box-sizing: border-box;
+    }
+
+    /* Contorno exterior fino */
+    .cube::after,
+    .logo-cube::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border: var(--stroke) solid var(--cube-edge);
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+
+    /* Trazos diagonales del bisel */
+    .cube::before,
+    .logo-cube::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background:
+        linear-gradient(45deg, transparent 48.5%, var(--cube-edge) 49.5%, var(--cube-edge) 50.5%, transparent 51.5%) left top / 20% 20% no-repeat,
+        linear-gradient(135deg, transparent 48.5%, var(--cube-edge) 49.5%, var(--cube-edge) 50.5%, transparent 51.5%) right top / 20% 20% no-repeat,
+        linear-gradient(135deg, transparent 48.5%, var(--cube-edge) 49.5%, var(--cube-edge) 50.5%, transparent 51.5%) left bottom / 20% 20% no-repeat,
+        linear-gradient(45deg, transparent 48.5%, var(--cube-edge) 49.5%, var(--cube-edge) 50.5%, transparent 51.5%) right bottom / 20% 20% no-repeat;
+    }
+
+    /* COLORES POR CUBO (8 colores distintos) */
+    .cube.blue,
+    .logo-cube.blue {
+      --cube-base: var(--blue-fill);
+      --cube-edge: var(--blue-stroke);
+      --cube-top: var(--blue-light);
+      --cube-left: var(--blue-light);
+      --cube-bottom: var(--blue-dark);
+      --cube-right: var(--blue-dark);
+    }
+
+    .cube.purple,
+    .logo-cube.purple {
+      --cube-base: var(--purple-fill);
+      --cube-edge: var(--purple-stroke);
+      --cube-top: var(--purple-light);
+      --cube-left: var(--purple-light);
+      --cube-bottom: var(--purple-dark);
+      --cube-right: var(--purple-dark);
+    }
+
+    .cube.pink,
+    .logo-cube.pink {
+      --cube-base: var(--pink-fill);
+      --cube-edge: var(--pink-stroke);
+      --cube-top: var(--pink-light);
+      --cube-left: var(--pink-light);
+      --cube-bottom: var(--pink-dark);
+      --cube-right: var(--pink-dark);
+    }
+
+    .cube.coral,
+    .logo-cube.coral {
+      --cube-base: var(--red-fill);
+      --cube-edge: var(--red-stroke);
+      --cube-top: var(--red-light);
+      --cube-left: var(--red-light);
+      --cube-bottom: var(--red-dark);
+      --cube-right: var(--red-dark);
+    }
+
+    .cube.red,
+    .logo-cube.red {
+      --cube-base: var(--teal-fill);
+      --cube-edge: var(--teal-stroke);
+      --cube-top: var(--teal-light);
+      --cube-left: var(--teal-light);
+      --cube-bottom: var(--teal-dark);
+      --cube-right: var(--teal-dark);
+    }
+
+    .cube.peach,
+    .logo-cube.peach {
+      --cube-base: var(--orange-fill);
+      --cube-edge: var(--orange-stroke);
+      --cube-top: var(--orange-light);
+      --cube-left: var(--orange-light);
+      --cube-bottom: var(--orange-dark);
+      --cube-right: var(--orange-dark);
+    }
+
+    .cube.green,
+    .logo-cube.green {
+      --cube-base: var(--green-fill);
+      --cube-edge: var(--green-stroke);
+      --cube-top: var(--green-light);
+      --cube-left: var(--green-light);
+      --cube-bottom: var(--green-dark);
+      --cube-right: var(--green-dark);
+    }
+
+    .cube.yellow,
+    .logo-cube.yellow {
+      --cube-base: var(--yellow-fill);
+      --cube-edge: var(--yellow-stroke);
+      --cube-top: var(--yellow-light);
+      --cube-left: var(--yellow-light);
+      --cube-bottom: var(--yellow-dark);
+      --cube-right: var(--yellow-dark);
+    }
+
+    /* RESPONSIVE PORTADA */
+    @media (max-width: 360px) {
+      .home-screen {
+        width: 100%;
+      }
+      .cube-cluster {
+        grid-auto-rows: 32px;
+      }
+      .cube {
+        width: 32px;
+        height: 32px;
+      }
+      .cluster-top-left,
+      .cluster-bottom-right {
+        grid-template-columns: 32px;
+      }
+      .cluster-top-right {
+        grid-template-columns: repeat(4, 32px);
+      }
+      .cluster-bottom-left {
+        width: 128px;
+        grid-template-columns: repeat(4, 32px);
+        grid-template-rows: repeat(6, 32px);
+      }
+      .logo {
+        font-size: 58px;
+      }
+      .play-button {
+        width: 180px;
+      }
+    }
+
+    .logo-block .face-top { clip-path: polygon(0 0, 100% 0, 80% 20%, 20% 20%); }
+    .logo-block .face-bottom { clip-path: polygon(0 100%, 20% 80%, 80% 80%, 100% 100%); }
+    .logo-block .face-left { clip-path: polygon(0 0, 20% 20%, 20% 80%, 0 100%); }
+    .logo-block .face-right { clip-path: polygon(100% 0, 80% 20%, 80% 80%, 100% 100%); }
+    .logo-block .face-center { z-index: 2; inset: 20%; border: 0.5px solid var(--cube-edge); background: var(--cube-base); box-shadow: none; }
+    .logo-block .logo-cube::before { content: ""; position: absolute; inset: 0; z-index: 4; border: 0.5px solid var(--cube-edge); pointer-events: none; }
+
+    /* ==========================================
+       PANTALLA DE JUEGO — iPhone Pro & Pro Max
+       ========================================== */
+    .game-screen {
+      --game-cell: min(10.4vw, 48px);
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      height: 100%;
+      height: 100dvh;
+      margin: 0 auto;
+      padding:
+        calc(max(env(safe-area-inset-top, 0px), 14px) + 8px)
+        max(env(safe-area-inset-right, 0px), 16px)
+        calc(max(env(safe-area-inset-bottom, 0px), 16px) + 8px)
+        max(env(safe-area-inset-left, 0px), 16px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0;
+      background: var(--background);
+      color: var(--text);
+    }
+
+    .game-screen[hidden],
+    .game-modal[hidden],
+    .home-screen[hidden] {
+      display: none !important;
+    }
+
+    .game-header {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(48px, 60px) minmax(0, 1fr) minmax(48px, 60px);
+      align-items: center;
+      gap: 12px;
+      margin-top: 4px;
+      margin-bottom: 12px;
+      flex: 0 0 auto;
+    }
+
+    .game-icon-button,
+    .level-pill {
+      height: 54px;
+      border: 0;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(32, 37, 54, 0.14);
+    }
+
+    .game-icon-button {
+      position: relative;
+      width: 100%;
+      min-width: 0;
+      color: #8273c8;
+      font-size: 31px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      align-self: center;
+      box-sizing: border-box;
+      transition: transform 120ms ease;
+    }
+
+    .game-icon-button:active {
+      transform: scale(0.95);
+    }
+
+    .game-icon-button svg {
+      display: block;
+      width: 26px;
+      height: 26px;
+      flex: 0 0 26px;
+    }
+
+    .level-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 28px;
+      font-size: 17px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .hint-button { overflow: visible; }
+    .hint-count {
+      position: absolute;
+      top: -6px;
+      right: -4px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: #8976d1;
+      font-size: 13px;
+      font-weight: 800;
+      z-index: 2;
+    }
+
+    .board-card {
+      width: 100%;
+      margin: 0 auto;
+      padding: 11px;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 8px 22px rgba(32, 37, 54, 0.13);
+      flex: 0 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      grid-template-rows: repeat(8, minmax(0, 1fr));
+      gap: 0;
+      background: #d9deea;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      max-height: calc(100dvh - 335px);
+      overflow: hidden;
+      border-radius: 10px;
+      touch-action: none;
+    }
+
+    .board-cell {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      background: #e9edf5;
+      border: 1px solid #d9deea;
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      transition: background 100ms ease;
+    }
+
+    .board-cell.piece-placed {
+      border: 0;
+      padding: 0;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+    }
+    .board-cell.preview-valid {
+      background: #d8f3e2 !important;
+      border-color: #a4e5bb !important;
+    }
+    .board-cell.preview-invalid {
+      background: #ffe1e7 !important;
+      border-color: #fca5b9 !important;
+    }
+    .board-cell .cube {
+      width: 100%;
+      height: 100%;
+    }
+    .board-cell.piece-placed:focus-visible {
+      outline: 2px solid #9273d2;
+      outline-offset: -3px;
+    }
+
+    .board-cell.hint-target {
+      background: #e6e0ff;
+      box-shadow: inset 0 0 0 2px #8b78df;
+      animation: hintPulse 850ms ease-in-out 2;
+    }
+    @keyframes hintPulse {
+      0%, 100% { box-shadow: inset 0 0 0 2px #8b78df; }
+      50% { box-shadow: inset 0 0 0 4px #b9adf5; }
+    }
+
+    /* CUADRÍCULA 2x4 DE PIEZAS (2 FILAS x 4 COLUMNAS) */
+    .pieces-tray {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 10px 8px;
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 176px;
+      max-height: 235px;
+      margin-top: 12px;
+      padding: 4px 2px;
+      align-items: center;
+      justify-items: center;
+      touch-action: none;
+    }
+
+    .tray-slot {
+      width: 100%;
+      height: 100%;
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      cursor: grab;
+    }
+
+    .tray-slot:active {
+      cursor: grabbing;
+    }
+
+    .tray-slot.is-used-slot,
+    .tray-slot.is-used-slot:active {
+      cursor: default;
+    }
+
+    .piece {
+      --piece-size: 15px;
+      display: grid;
+      flex: 0 0 auto;
+      grid-template-columns: repeat(var(--piece-cols), var(--piece-size));
+      grid-template-rows: repeat(var(--piece-rows), var(--piece-size));
+      gap: 0;
+      padding: 0;
+      touch-action: none;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      align-items: center;
+      justify-content: center;
+      transition: transform 160ms ease, filter 160ms ease;
+    }
+
+    .piece .cube {
+      width: 100%;
+      height: 100%;
+    }
+
+    .piece:active { cursor: grabbing; }
+
+    .piece.is-dragging {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      pointer-events: none;
+      touch-action: none;
+      will-change: transform;
+      filter: drop-shadow(0 12px 20px rgba(35, 40, 60, 0.34));
+      gap: 0;
+      transition: filter 120ms ease;
+    }
+
+    .piece.is-used-tray {
+      opacity: 0.65;
+      filter: drop-shadow(0 2px 4px rgba(32, 37, 54, 0.14));
+      transform: scale(0.95);
+      transition: opacity 0.2s ease, filter 0.2s ease, transform 0.2s ease;
+      cursor: default;
+    }
+
+    .piece.is-used-tray .cube {
+      --cube-base: #cfd5e2;
+      --cube-edge: #9aa3b5;
+      --cube-top: #dee3ed;
+      --cube-left: #d6dce8;
+      --cube-bottom: #b5bdce;
+      --cube-right: #bcc4d4;
+    }
+
+    .piece.hint-piece {
+      animation: pieceHintPulse 850ms ease-in-out 3;
+      filter: drop-shadow(0 0 5px rgba(139, 120, 223, 0.95));
+    }
+    @keyframes pieceHintPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
+
+    /* MODALES */
+    .game-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(32, 37, 54, 0.42);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .modal-card {
+      position: relative;
+      width: 100%;
+      max-width: 340px;
+      padding: 26px 22px 22px;
+      border-radius: 24px;
+      background: #ffffff;
+      box-shadow: 0 18px 40px rgba(32, 37, 54, 0.24);
+      text-align: center;
+    }
+
+    .modal-card h2 {
+      margin: 0 0 12px;
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .modal-card p {
+      margin: 8px 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--secondary-text);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: 50%;
+      background: #f1f0fc;
+      color: #687084;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .modal-action {
+      width: 100%;
+      height: 46px;
+      margin-top: 16px;
+      border: 0;
+      border-radius: 23px;
+      background: linear-gradient(110deg, #817FEA, #A2B3F3);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .settings-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .setting-row,
+    .settings-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 12px 14px;
+      border: 0;
+      border-radius: 14px;
+      background: #f6f5fd;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      gap: 10px;
+    }
+
+    .setting-row span:nth-child(2),
+    .settings-link span:nth-child(2) {
+      flex: 1;
+      text-align: left;
+    }
+
+    .setting-row select {
+      border: 1px solid #d9deea;
+      border-radius: 10px;
+      padding: 4px 8px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .settings-link { margin-top: 8px; }
+
+    /* AJUSTES ESPECÍFICOS PARA IPHONE PRO (393x852 / 402x874) */
+    @media (min-width: 390px) and (min-height: 840px) {
+      .game-screen {
+        padding-top: calc(max(env(safe-area-inset-top, 0px), 20px) + 12px);
+        padding-bottom: calc(max(env(safe-area-inset-bottom, 0px), 20px) + 10px);
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+      .game-header {
+        margin-bottom: 18px;
+      }
+      .board-card {
+        padding: 12px;
+        border-radius: 24px;
+      }
+      .pieces-tray {
+        min-height: 196px;
+        max-height: 255px;
+        gap: 12px 10px;
+      }
+      .tray-slot {
+        min-height: 90px;
+      }
+      .piece {
+        --piece-size: 16px;
+      }
+    }
+
+    /* AJUSTES ESPECÍFICOS PARA IPHONE PRO MAX (430x932 / 440x956) */
+    @media (min-width: 428px) and (min-height: 920px) {
+      .game-screen {
+        max-width: 440px;
+        padding-top: calc(max(env(safe-area-inset-top, 0px), 24px) + 14px);
+        padding-bottom: calc(max(env(safe-area-inset-bottom, 0px), 24px) + 12px);
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .game-header {
+        grid-template-columns: 58px minmax(0, 1fr) 58px;
+        margin-bottom: 22px;
+      }
+      .game-icon-button,
+      .level-pill {
+        height: 58px;
+        border-radius: 21px;
+      }
+      .level-pill {
+        font-size: 18px;
+      }
+      .board-card {
+        padding: 13px;
+        border-radius: 26px;
+      }
+      .pieces-tray {
+        min-height: 212px;
+        max-height: 275px;
+        gap: 14px 10px;
+      }
+      .tray-slot {
+        min-height: 98px;
+      }
+      .piece {
+        --piece-size: 17px;
+      }
+    }
+
+    @media (max-height: 760px) {
+      .game-screen { gap: 8px; padding-top: 12px; }
+      .board-card { padding: 10px; }
+      .pieces-tray { min-height: 152px; max-height: 190px; gap: 6px; margin-top: 6px; }
+      .tray-slot { min-height: 70px; }
+      .piece { --piece-size: 13px; }
+      .settings-card { max-height: 92vh; overflow-y: auto; padding-top: 26px; }
+    }
+
+    @media (max-width: 390px) {
+      .game-header { grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; }
+      .game-icon-button,
+      .level-pill { height: 52px; }
+      .game-icon-button { padding: 8px; border-radius: 18px; }
+      .game-icon-button svg { width: 24px; height: 24px; flex-basis: 24px; }
+      .level-pill { font-size: 16px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- PANTALLA PRINCIPAL DE INICIO -->
+  <main class="home-screen">
+    <!-- CUBOS SUPERIORES IZQUIERDOS -->
+    <div class="cube-cluster cluster-top-left" aria-hidden="true">
+      <span class="cube purple">
+        <span class="face face-top"></span><span class="face face-bottom"></span>
+        <span class="face face-left"></span><span class="face face-right"></span>
+        <span class="face face-center"></span>
+      </span>
+      <span class="cube green">
+        <span class="face face-top"></span><span class="face face-bottom"></span>
+        <span class="face face-left"></span><span class="face face-right"></span>
+        <span class="face face-center"></span>
+      </span>
+    </div>
+
+    <!-- CUBOS SUPERIORES DERECHOS -->
+    <div class="cube-cluster cluster-top-right" aria-hidden="true">
+      <span class="cube pink"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube pink"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube pink"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube pink"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube purple"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube green"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+    </div>
+
+    <!-- CONTENIDO CENTRAL -->
+    <section class="home-content">
+      <h1 class="logo" aria-label="BLOCK">
+        <span>BL</span>
+        <span class="logo-block" aria-hidden="true">
+          <span class="logo-cube pink">
+            <span class="face face-top"></span><span class="face face-bottom"></span>
+            <span class="face face-left"></span><span class="face face-right"></span>
+            <span class="face face-center"></span>
+          </span>
+          <span class="logo-cube yellow">
+            <span class="face face-top"></span><span class="face face-bottom"></span>
+            <span class="face face-left"></span><span class="face face-right"></span>
+            <span class="face face-center"></span>
+          </span>
+          <span class="logo-cube purple">
+            <span class="face face-top"></span><span class="face face-bottom"></span>
+            <span class="face face-left"></span><span class="face face-right"></span>
+            <span class="face face-center"></span>
+          </span>
+          <span class="logo-cube green">
+            <span class="face face-top"></span><span class="face face-bottom"></span>
+            <span class="face face-left"></span><span class="face face-right"></span>
+            <span class="face face-center"></span>
+          </span>
+        </span>
+        <span>CK</span>
+      </h1>
+
+      <p class="tagline">
+        Encuentra el lugar perfecto<br>
+        para cada bloque.
+      </p>
+
+      <button class="play-button" id="playButton" type="button">
+        <span class="play-icon" aria-hidden="true">▶</span>
+        JUGAR
+      </button>
+    </section>
+
+    <!-- CUBOS INFERIORES IZQUIERDOS -->
+    <div class="cube-cluster cluster-bottom-left" aria-hidden="true">
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube pink"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube pink"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube green"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube pink"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube pink"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube yellow"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube yellow"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube purple"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube purple"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+      <span class="cube blue"><span class="face face-top"></span><span class="face face-bottom"></span><span class="face face-left"></span><span class="face face-right"></span><span class="face face-center"></span></span>
+    </div>
+
+    <!-- CUBO AISLADO INFERIOR DERECHO -->
+    <div class="cube-cluster cluster-bottom-right" aria-hidden="true">
+      <span class="cube blue">
+        <span class="face face-top"></span><span class="face face-bottom"></span>
+        <span class="face face-left"></span><span class="face face-right"></span>
+        <span class="face face-center"></span>
+      </span>
+    </div>
+  </main>
+
+  <!-- PANTALLA DE JUEGO PRINCIPAL -->
+  <main class="game-screen" id="gameScreen" hidden>
+    <header class="game-header">
+      <button class="game-icon-button" id="settingsButton" aria-label="Configuración" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+
+      <div class="level-pill" id="levelLabel">Nivel 1</div>
+
+      <button class="game-icon-button hint-button" id="hintButton" aria-label="Pista" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18h6"/>
+          <path d="M10 22h4"/>
+          <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.9 14"/>
+        </svg>
+        <span class="hint-count" id="hintCount">8</span>
+      </button>
+    </header>
+
+    <section class="board-card" aria-label="Tablero de juego">
+      <div class="game-board" id="gameBoard" aria-label="Tablero de 8 columnas por 8 filas"></div>
+    </section>
+
+    <section class="pieces-tray" id="piecesTray" aria-label="Piezas disponibles"></section>
+
+    <!-- MODAL CONFIGURACIÓN -->
+    <div class="game-modal" id="settingsModal" hidden>
+      <div class="modal-card settings-card">
+        <button class="modal-close" id="closeSettings" aria-label="Cerrar" type="button">×</button>
+        <h2>Configuración</h2>
+        <div class="settings-group">
+          <label class="setting-row" for="soundToggle">
+            <span class="setting-icon" aria-hidden="true">♫</span>
+            <span>Sonido</span>
+            <input id="soundToggle" type="checkbox" checked>
+          </label>
+          <label class="setting-row" for="vibrationToggle">
+            <span class="setting-icon" aria-hidden="true">♧</span>
+            <span>Vibración</span>
+            <input id="vibrationToggle" type="checkbox" checked>
+          </label>
+        </div>
+        <label class="setting-row setting-select-row" for="languageSelect">
+          <span class="setting-icon" aria-hidden="true">◎</span>
+          <span>Idioma</span>
+          <select id="languageSelect">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+          </select>
+        </label>
+        <button class="settings-link" id="howToPlayButton" type="button">
+          <span class="setting-icon">▤</span>
+          <span>Cómo jugar</span>
+          <span class="settings-chevron">›</span>
+        </button>
+        <button class="settings-link" id="privacyButton" type="button">
+          <span class="setting-icon">♙</span>
+          <span>Política de privacidad</span>
+          <span class="settings-chevron">›</span>
+        </button>
+        <button class="settings-link" id="termsButton" type="button">
+          <span class="setting-icon">▧</span>
+          <span>Términos del servicio</span>
+          <span class="settings-chevron">›</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL INFORMACIÓN -->
+    <div class="game-modal" id="infoModal" hidden>
+      <div class="modal-card">
+        <button class="modal-close" id="closeInfo" aria-label="Cerrar" type="button">×</button>
+        <h2 id="infoTitle">Cómo jugar</h2>
+        <p id="infoText">Arrastra las fichas al tablero.</p>
+        <button class="modal-action" id="closeInfoButton" type="button">Entendido</button>
+      </div>
+    </div>
+
+    <!-- MODAL COMPLETADO -->
+    <div class="game-modal" id="completeModal" hidden>
+      <div class="modal-card complete-card">
+        <h2>¡Muy bien!</h2>
+        <p id="completeLevelText">Nivel 1 completado</p>
+        <p>Has encontrado el lugar perfecto para cada bloque.</p>
+        <button class="modal-action" id="nextLevelButton" type="button">SIGUIENTE NIVEL →</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- LÓGICA DE JUEGO PRINCIPAL EN JAVASCRIPT -->
+  <script>
+    const homeScreen = document.querySelector('.home-screen');
+    const gameScreen = document.getElementById('gameScreen');
+    const playButton = document.getElementById('playButton');
+    const boardElement = document.getElementById('gameBoard');
+    const trayElement = document.getElementById('piecesTray');
+    const levelLabel = document.getElementById('levelLabel');
+    const hintCountElement = document.getElementById('hintCount');
+    const settingsModal = document.getElementById('settingsModal');
+    const infoModal = document.getElementById('infoModal');
+    const completeModal = document.getElementById('completeModal');
+
+    const soundToggle = document.getElementById('soundToggle');
+    const vibrationToggle = document.getElementById('vibrationToggle');
+    const languageSelect = document.getElementById('languageSelect');
+
+    const ROWS = 8;
+    const COLS = 8;
+    let level = Number(localStorage.getItem('blockLevel') || 1);
+    let hints = 8;
+
+    let board = [];
+    let boardCellEls = [];
+    let currentPieces = [];
+    let dragState = null;
+
+    const COLOR_PALETTE = ['blue', 'purple', 'pink', 'coral', 'peach', 'green', 'yellow', 'red'];
+
+    /* ==========================================
+       SISTEMA DE AUDIO SINTETIZADO Y HÁPTICA
+       ========================================== */
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = AudioContextClass ? new AudioContextClass() : null;
+
+    function playTone(freq, duration = 0.08, type = 'sine', gainValue = 0.08, endFreq = null) {
+      if (!soundToggle.checked || !audioCtx) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        if (endFreq) {
+          osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
+        }
+        gain.gain.setValueAtTime(gainValue, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + duration);
+      } catch (err) {
+        // Ignorar bloqueos de audio antes de interacción
+      }
+    }
+
+    function playPickupSound() {
+      playTone(390, 0.06, 'triangle', 0.07, 520);
+    }
+
+    function playPlaceSound() {
+      playTone(320, 0.09, 'sine', 0.1, 460);
+    }
+
+    function playReturnSound() {
+      playTone(340, 0.08, 'sine', 0.06, 220);
+    }
+
+    function playHintSound() {
+      playTone(587.33, 0.12, 'triangle', 0.09, 880);
+    }
+
+    function playWinSound() {
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((note, idx) => {
+        setTimeout(() => playTone(note, 0.18, 'triangle', 0.09), idx * 90);
+      });
+    }
+
+    function triggerVibration(pattern = 15) {
+      if (!vibrationToggle.checked) return;
+      if (navigator.vibrate) {
+        try {
+          navigator.vibrate(pattern);
+        } catch (err) {
+          // Ignorar si no es soportado
+        }
+      }
+    }
+
+    /* ==========================================
+       GENERADOR DE CUBO 3D Y ROMPECABEZAS 8x8
+       ========================================== */
+    function cubeMarkup(color) {
+      return `
+        <span class="cube ${color}">
+          <span class="face face-top"></span>
+          <span class="face face-bottom"></span>
+          <span class="face face-left"></span>
+          <span class="face face-right"></span>
+          <span class="face face-center"></span>
+        </span>
+      `;
+    }
+
+    function getUnassignedNeighbors(grid, r, c) {
+      const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+      const result = [];
+      for (const [dr, dc] of dirs) {
+        const nr = r + dr;
+        const nc = c + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && grid[nr][nc] === -1) {
+          result.push([nr, nc]);
+        }
+      }
+      return result;
+    }
+
+    /**
+     * Genera 8 piezas conectadas de 8 bloques cada una que cubren exactamente
+     * el tablero 8x8, garantizando siempre una solución válida.
+     */
+    function generateUniqueLevelPieces(levelNum) {
+      const PIECE_COUNT = 8;
+      const PIECE_SIZE = 8;
+
+      for (let attempt = 0; attempt < 250; attempt++) {
+        const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(-1));
+        const rawPieces = [];
+        let success = true;
+
+        for (let pId = 0; pId < PIECE_COUNT; pId++) {
+          // Buscar celda libre más restringida (menos vecinos libres) para evitar huecos aislados
+          let startCell = null;
+          let minDeg = 99;
+          const candidates = [];
+
+          for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+              if (grid[r][c] === -1) {
+                const deg = getUnassignedNeighbors(grid, r, c).length;
+                if (deg < minDeg) {
+                  minDeg = deg;
+                  candidates.length = 0;
+                  candidates.push([r, c]);
+                } else if (deg === minDeg) {
+                  candidates.push([r, c]);
+                }
+              }
+            }
+          }
+
+          if (!candidates.length) {
+            success = false;
+            break;
+          }
+
+          startCell = candidates[Math.floor(Math.random() * candidates.length)];
+          const cells = [startCell];
+          grid[startCell[0]][startCell[1]] = pId;
+
+          while (cells.length < PIECE_SIZE) {
+            // Reunir frontera de celdas adyacentes libres
+            const frontierMap = new Map();
+            for (const [cr, cc] of cells) {
+              for (const [nr, nc] of getUnassignedNeighbors(grid, cr, cc)) {
+                const key = `${nr},${nc}`;
+                if (!frontierMap.has(key)) {
+                  frontierMap.set(key, [nr, nc]);
+                }
+              }
+            }
+
+            const frontier = Array.from(frontierMap.values());
+            if (!frontier.length) {
+              success = false;
+              break;
+            }
+
+            // Priorizar vecinos con menor conectividad libre + algo de aleatoriedad para formas orgánicas
+            frontier.sort((a, b) => {
+              const degA = getUnassignedNeighbors(grid, a[0], a[1]).length;
+              const degB = getUnassignedNeighbors(grid, b[0], b[1]).length;
+              return (degA - degB) + (Math.random() - 0.5) * 1.4;
+            });
+
+            const chosen = frontier[0];
+            grid[chosen[0]][chosen[1]] = pId;
+            cells.push(chosen);
+          }
+
+          if (!success) break;
+          rawPieces.push(cells);
+        }
+
+        if (success && rawPieces.length === PIECE_COUNT) {
+          // Mezclar orden visual de las piezas en la cuadrícula 2x4
+          const order = rawPieces.map((_, idx) => idx).sort(() => Math.random() - 0.5);
+
+          return order.map((origIdx, displayIdx) => {
+            const absCells = rawPieces[origIdx];
+            let minR = ROWS, maxR = 0, minC = COLS, maxC = 0;
+            for (const [r, c] of absCells) {
+              if (r < minR) minR = r;
+              if (r > maxR) maxR = r;
+              if (c < minC) minC = c;
+              if (c > maxC) maxC = c;
+            }
+
+            const normCells = absCells.map(([r, c]) => [c - minC, r - minR]);
+            return {
+              id: displayIdx,
+              color: COLOR_PALETTE[(displayIdx + levelNum) % COLOR_PALETTE.length],
+              cells: normCells,
+              cols: maxC - minC + 1,
+              rows: maxR - minR + 1,
+              solutionRow: minR,
+              solutionCol: minC,
+              placedRow: null,
+              placedCol: null,
+              used: false,
+              isDragging: false
+            };
+          });
+        }
+      }
+
+      // Fallback determinista de 8 tiras de 1x8 si todos los intentos aleatorios fallaran
+      return Array.from({ length: 8 }, (_, idx) => ({
+        id: idx,
+        color: COLOR_PALETTE[idx % COLOR_PALETTE.length],
+        cells: Array.from({ length: 8 }, (__, c) => [c, 0]),
+        cols: 8,
+        rows: 1,
+        solutionRow: idx,
+        solutionCol: 0,
+        placedRow: null,
+        placedCol: null,
+        used: false,
+        isDragging: false
+      }));
+    }
+
+    /* ==========================================
+       LÓGICA DE COLOCACIÓN Y VISTA PREVIA
+       ========================================== */
+    function canPlacePiece(piece, anchorRow, anchorCol) {
+      for (const [dc, dr] of piece.cells) {
+        const r = anchorRow + dr;
+        const c = anchorCol + dc;
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return false;
+        if (board[r][c] !== null) return false;
+      }
+      return true;
+    }
+
+    function placePieceOnBoard(piece, anchorRow, anchorCol) {
+      for (const [dc, dr] of piece.cells) {
+        board[anchorRow + dr][anchorCol + dc] = piece.id;
+      }
+      piece.used = true;
+      piece.placedRow = anchorRow;
+      piece.placedCol = anchorCol;
+    }
+
+    function removePieceFromBoard(piece) {
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (board[r][c] === piece.id) {
+            board[r][c] = null;
+          }
+        }
+      }
+      piece.used = false;
+      piece.placedRow = null;
+      piece.placedCol = null;
+    }
+
+    function clearBoardPreview() {
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = boardCellEls[r]?.[c];
+          if (cell) {
+            cell.classList.remove('preview-valid', 'preview-invalid');
+          }
+        }
+      }
+    }
+
+    function getTargetAnchorFromPointer(clientX, clientY, offsetCol, offsetRow, touchLiftY) {
+      const rect = boardElement.getBoundingClientRect();
+      const cellW = rect.width / COLS;
+      const cellH = rect.height / ROWS;
+      const adjustedY = clientY - touchLiftY;
+
+      // Margen de tolerancia suave en los bordes del tablero
+      const tolX = cellW * 0.65;
+      const tolY = cellH * 0.65;
+      if (
+        clientX < rect.left - tolX ||
+        clientX > rect.right + tolX ||
+        adjustedY < rect.top - tolY ||
+        adjustedY > rect.bottom + tolY
+      ) {
+        return null;
+      }
+
+      const pointerCol = Math.floor((clientX - rect.left) / cellW);
+      const pointerRow = Math.floor((adjustedY - rect.top) / cellH);
+      return {
+        anchorRow: pointerRow - offsetRow,
+        anchorCol: pointerCol - offsetCol
+      };
+    }
+
+    function updateBoardPreview(piece, anchorRow, anchorCol) {
+      clearBoardPreview();
+      if (anchorRow === null || anchorCol === null) return;
+
+      const valid = canPlacePiece(piece, anchorRow, anchorCol);
+      const cls = valid ? 'preview-valid' : 'preview-invalid';
+
+      for (const [dc, dr] of piece.cells) {
+        const r = anchorRow + dr;
+        const c = anchorCol + dc;
+        if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
+          boardCellEls[r]?.[c]?.classList.add(cls);
+        }
+      }
+    }
+
+    /* ==========================================
+       ARRASTRE FLUIDO CON ACELERACIÓN GPU
+       ========================================== */
+    function getNearestPieceCellOffset(piece, pieceEl, clientX, clientY) {
+      const rect = pieceEl.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        return { offsetCol: 0, offsetRow: 0 };
+      }
+      const cellW = rect.width / piece.cols;
+      const cellH = rect.height / piece.rows;
+      const relCol = (clientX - rect.left) / cellW - 0.5;
+      const relRow = (clientY - rect.top) / cellH - 0.5;
+
+      let bestCell = piece.cells[0];
+      let bestDist = Infinity;
+      for (const [c, r] of piece.cells) {
+        const dist = (c - relCol) ** 2 + (r - relRow) ** 2;
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestCell = [c, r];
+        }
+      }
+      return { offsetCol: bestCell[0], offsetRow: bestCell[1] };
+    }
+
+    function positionGhost(ghost, clientX, clientY, offsetCol, offsetRow, cellW, cellH, touchLiftY) {
+      const x = clientX - (offsetCol + 0.5) * cellW;
+      const y = clientY - touchLiftY - (offsetRow + 0.5) * cellH;
+      ghost.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    }
+
+    function startDrag(e, piece, offsetCol = 0, offsetRow = 0, fromBoard = false, origR = null, origC = null) {
+      piece.isDragging = true;
+      renderTray();
+
+      const isTouch = e.pointerType !== undefined && e.pointerType !== 'mouse';
+      const boardRect = boardElement.getBoundingClientRect();
+      const cellW = boardRect.width / COLS;
+      const cellH = boardRect.height / ROWS;
+      const touchLiftY = isTouch ? Math.min(72, cellH * 1.45) : 0;
+
+      // Crear pieza flotante a escala 1:1 con el tablero
+      const ghost = document.createElement('div');
+      ghost.className = 'piece is-dragging';
+      ghost.style.setProperty('--piece-cols', piece.cols);
+      ghost.style.setProperty('--piece-rows', piece.rows);
+      ghost.style.gridTemplateColumns = `repeat(${piece.cols}, ${cellW}px)`;
+      ghost.style.gridTemplateRows = `repeat(${piece.rows}, ${cellH}px)`;
+
+      const matrix = Array.from({ length: piece.rows }, () => Array(piece.cols).fill(false));
+      piece.cells.forEach(([c, r]) => {
+        matrix[r][c] = true;
+      });
+
+      for (let r = 0; r < piece.rows; r++) {
+        for (let c = 0; c < piece.cols; c++) {
+          if (matrix[r][c]) {
+            const cellWrap = document.createElement('div');
+            cellWrap.style.width = '100%';
+            cellWrap.style.height = '100%';
+            cellWrap.innerHTML = cubeMarkup(piece.color);
+            ghost.appendChild(cellWrap);
+          } else {
+            const emptyCell = document.createElement('div');
+            emptyCell.style.visibility = 'hidden';
+            ghost.appendChild(emptyCell);
+          }
+        }
+      }
+
+      document.body.appendChild(ghost);
+      positionGhost(ghost, e.clientX, e.clientY, offsetCol, offsetRow, cellW, cellH, touchLiftY);
+
+      dragState = {
+        piece,
+        ghost,
+        offsetCol,
+        offsetRow,
+        cellW,
+        cellH,
+        touchLiftY,
+        fromBoard,
+        origR,
+        origC,
+        latestX: e.clientX,
+        latestY: e.clientY,
+        rafPending: false
+      };
+
+      const target = getTargetAnchorFromPointer(e.clientX, e.clientY, offsetCol, offsetRow, touchLiftY);
+      if (target) {
+        updateBoardPreview(piece, target.anchorRow, target.anchorCol);
+      }
+
+      window.addEventListener('pointermove', moveDrag, { passive: false });
+      window.addEventListener('pointerup', endDrag);
+      window.addEventListener('pointercancel', endDrag);
+    }
+
+    function moveDrag(e) {
+      if (!dragState) return;
+      if (e.cancelable) e.preventDefault();
+
+      dragState.latestX = e.clientX;
+      dragState.latestY = e.clientY;
+
+      if (!dragState.rafPending) {
+        dragState.rafPending = true;
+        requestAnimationFrame(() => {
+          if (!dragState) return;
+          dragState.rafPending = false;
+          const { piece, ghost, offsetCol, offsetRow, cellW, cellH, touchLiftY, latestX, latestY } = dragState;
+          positionGhost(ghost, latestX, latestY, offsetCol, offsetRow, cellW, cellH, touchLiftY);
+
+          const target = getTargetAnchorFromPointer(latestX, latestY, offsetCol, offsetRow, touchLiftY);
+          if (target) {
+            updateBoardPreview(piece, target.anchorRow, target.anchorCol);
+          } else {
+            clearBoardPreview();
+          }
+        });
+      }
+    }
+
+    function endDrag(e) {
+      if (!dragState) return;
+
+      window.removeEventListener('pointermove', moveDrag);
+      window.removeEventListener('pointerup', endDrag);
+      window.removeEventListener('pointercancel', endDrag);
+
+      const { piece, ghost, offsetCol, offsetRow, touchLiftY, fromBoard } = dragState;
+      const dropX = e.clientX !== undefined ? e.clientX : dragState.latestX;
+      const dropY = e.clientY !== undefined ? e.clientY : dragState.latestY;
+
+      piece.isDragging = false;
+      clearBoardPreview();
+
+      if (ghost && ghost.parentNode) {
+        ghost.parentNode.removeChild(ghost);
+      }
+
+      const target = getTargetAnchorFromPointer(dropX, dropY, offsetCol, offsetRow, touchLiftY);
+      if (target && canPlacePiece(piece, target.anchorRow, target.anchorCol)) {
+        placePieceOnBoard(piece, target.anchorRow, target.anchorCol);
+        playPlaceSound();
+        triggerVibration(20);
+      } else {
+        piece.used = false;
+        piece.placedRow = null;
+        piece.placedCol = null;
+        if (fromBoard) {
+          playReturnSound();
+          triggerVibration(12);
+        }
+      }
+
+      dragState = null;
+      renderBoard();
+      renderTray();
+      checkLevelComplete();
+    }
+
+    /* ==========================================
+       RENDERIZADO DEL TABLERO Y CUADRÍCULA 2x4
+       ========================================== */
+    function renderBoard() {
+      boardElement.innerHTML = '';
+      boardCellEls = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cellEl = document.createElement('div');
+          cellEl.className = 'board-cell';
+          const pieceId = board[r][c];
+
+          if (pieceId !== null) {
+            const piece = currentPieces.find(p => p.id === pieceId);
+            if (piece) {
+              cellEl.classList.add('piece-placed');
+              cellEl.innerHTML = cubeMarkup(piece.color);
+
+              cellEl.addEventListener('pointerdown', (e) => {
+                if (e.button !== undefined && e.button !== 0) return;
+                if (dragState) return;
+                if (e.cancelable) e.preventDefault();
+                if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+                const origR = piece.placedRow;
+                const origC = piece.placedCol;
+                const offsetCol = c - origC;
+                const offsetRow = r - origR;
+
+                removePieceFromBoard(piece);
+                renderBoard();
+                playPickupSound();
+                triggerVibration(15);
+                startDrag(e, piece, offsetCol, offsetRow, true, origR, origC);
+              });
+            }
+          }
+
+          boardCellEls[r][c] = cellEl;
+          boardElement.appendChild(cellEl);
+        }
+      }
+    }
+
+    function renderTray() {
+      trayElement.innerHTML = '';
+
+      // Calcular tamaño óptimo por celda para que cada ficha encaje con holgura en la cuadrícula 2x4
+      const trayWidth = trayElement.clientWidth || Math.min(window.innerWidth - 32, 408);
+      const trayHeight = trayElement.clientHeight || 190;
+      const maxSlotWidth = Math.max(56, (trayWidth - 28) / 4);
+      const maxSlotHeight = Math.max(68, (trayHeight - 16) / 2);
+      const baseCubeSize = window.innerHeight >= 920 ? 17 : (window.innerHeight >= 840 ? 16 : (window.innerHeight <= 760 ? 13 : 15));
+
+      currentPieces.forEach(piece => {
+        const slot = document.createElement('div');
+        slot.className = `tray-slot${piece.used ? ' is-used-slot' : ''}`;
+
+        const fittedSize = Math.floor(Math.min(
+          baseCubeSize,
+          maxSlotWidth / Math.max(piece.cols, 1),
+          maxSlotHeight / Math.max(piece.rows, 1)
+        ));
+
+        const pEl = document.createElement('div');
+        const isShaded = piece.used || piece.isDragging;
+        pEl.className = `piece ${isShaded ? 'is-used-tray' : ''}`;
+        pEl.style.setProperty('--piece-cols', piece.cols);
+        pEl.style.setProperty('--piece-rows', piece.rows);
+        pEl.style.setProperty('--piece-size', `${Math.max(10, fittedSize)}px`);
+
+        const matrix = Array.from({ length: piece.rows }, () => Array(piece.cols).fill(false));
+        piece.cells.forEach(([c, r]) => {
+          matrix[r][c] = true;
+        });
+
+        for (let r = 0; r < piece.rows; r++) {
+          for (let c = 0; c < piece.cols; c++) {
+            if (matrix[r][c]) {
+              const cellWrap = document.createElement('div');
+              cellWrap.style.width = '100%';
+              cellWrap.style.height = '100%';
+              cellWrap.innerHTML = cubeMarkup(piece.color);
+              pEl.appendChild(cellWrap);
+            } else {
+              const emptyCell = document.createElement('div');
+              emptyCell.style.visibility = 'hidden';
+              pEl.appendChild(emptyCell);
+            }
+          }
+        }
+
+        slot.addEventListener('pointerdown', (e) => {
+          if (e.button !== undefined && e.button !== 0) return;
+          if (dragState || piece.used) return;
+          if (e.cancelable) e.preventDefault();
+          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+          const { offsetCol, offsetRow } = getNearestPieceCellOffset(piece, pEl, e.clientX, e.clientY);
+          playPickupSound();
+          triggerVibration(15);
+          startDrag(e, piece, offsetCol, offsetRow, false);
+        });
+
+        slot.appendChild(pEl);
+        trayElement.appendChild(slot);
+      });
+    }
+
+    /* ==========================================
+       PISTAS, PROGRESO Y NIVELES
+       ========================================== */
+    function updateLevelHeader() {
+      const lang = languageSelect.value || 'es';
+      const labels = {
+        es: `Nivel ${level}`,
+        en: `Level ${level}`,
+        pt: `Nível ${level}`
+      };
+      levelLabel.textContent = labels[lang] || labels.es;
+    }
+
+    function checkLevelComplete() {
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (board[r][c] === null) return false;
+        }
+      }
+
+      playWinSound();
+      triggerVibration([30, 50, 40]);
+
+      const lang = languageSelect.value || 'es';
+      const texts = {
+        es: `Nivel ${level} completado`,
+        en: `Level ${level} completed`,
+        pt: `Nível ${level} concluído`
+      };
+      document.getElementById('completeLevelText').textContent = texts[lang] || texts.es;
+      completeModal.hidden = false;
+      return true;
+    }
+
+    function useHint() {
+      if (hints <= 0 || dragState) return;
+
+      // Buscar una pieza que aún no esté colocada en su posición solución
+      const targetPiece = currentPieces.find(
+        p => !p.used || p.placedRow !== p.solutionRow || p.placedCol !== p.solutionCol
+      );
+      if (!targetPiece) return;
+
+      hints--;
+      hintCountElement.textContent = hints;
+
+      // Si la pieza ya estaba puesta en otro sitio, retirarla
+      if (targetPiece.used) {
+        removePieceFromBoard(targetPiece);
+      }
+
+      // Retirar cualquier otra pieza que ocupe las casillas solución de targetPiece
+      for (const [dc, dr] of targetPiece.cells) {
+        const sr = targetPiece.solutionRow + dr;
+        const sc = targetPiece.solutionCol + dc;
+        const occupantId = board[sr][sc];
+        if (occupantId !== null && occupantId !== targetPiece.id) {
+          const occupantPiece = currentPieces.find(p => p.id === occupantId);
+          if (occupantPiece) removePieceFromBoard(occupantPiece);
+        }
+      }
+
+      placePieceOnBoard(targetPiece, targetPiece.solutionRow, targetPiece.solutionCol);
+      playHintSound();
+      triggerVibration(25);
+
+      renderBoard();
+      renderTray();
+
+      // Resaltar visualmente las celdas recién colocadas por la pista
+      for (const [dc, dr] of targetPiece.cells) {
+        const sr = targetPiece.solutionRow + dr;
+        const sc = targetPiece.solutionCol + dc;
+        boardCellEls[sr]?.[sc]?.classList.add('hint-target');
+      }
+
+      checkLevelComplete();
+    }
+
+    function initLevel(targetLevel) {
+      level = targetLevel;
+      localStorage.setItem('blockLevel', String(level));
+      hints = 8;
+      hintCountElement.textContent = hints;
+      updateLevelHeader();
+
+      board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+      currentPieces = generateUniqueLevelPieces(level);
+
+      renderBoard();
+      renderTray();
+    }
+
+    /* ==========================================
+       EVENTOS DE INTERFAZ Y MODALES
+       ========================================== */
+    function openInfoModal(title, text) {
+      document.getElementById('infoTitle').textContent = title;
+      document.getElementById('infoText').textContent = text;
+      infoModal.hidden = false;
+    }
+
+    playButton.addEventListener('click', () => {
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      playPickupSound();
+      homeScreen.hidden = true;
+      gameScreen.hidden = false;
+      initLevel(level);
+    });
+
+    document.getElementById('hintButton').addEventListener('click', useHint);
+
+    document.getElementById('settingsButton').addEventListener('click', () => {
+      settingsModal.hidden = false;
+    });
+
+    document.getElementById('closeSettings').addEventListener('click', () => {
+      settingsModal.hidden = true;
+    });
+
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) settingsModal.hidden = true;
+    });
+
+    document.getElementById('nextLevelButton').addEventListener('click', () => {
+      completeModal.hidden = true;
+      initLevel(level + 1);
+    });
+
+    document.getElementById('howToPlayButton').addEventListener('click', () => {
+      openInfoModal(
+        'Cómo jugar',
+        'Arrastra las 8 piezas de colores desde la cuadrícula inferior hacia el tablero de 8×8 hasta cubrir todas las casillas sin dejar espacios libres. Arrastra una pieza en el tablero para moverla o devolverla.'
+      );
+    });
+
+    document.getElementById('privacyButton').addEventListener('click', () => {
+      openInfoModal(
+        'Política de privacidad',
+        'BLOCK guarda únicamente tu progreso de nivel y preferencias de sonido en tu dispositivo de forma local. No recopilamos ni compartimos datos personales.'
+      );
+    });
+
+    document.getElementById('termsButton').addEventListener('click', () => {
+      openInfoModal(
+        'Términos del servicio',
+        'Disfruta de BLOCK de manera libre y recreativa. Cada nivel se genera dinámicamente para ofrecerte desafíos únicos.'
+      );
+    });
+
+    document.getElementById('closeInfo').addEventListener('click', () => {
+      infoModal.hidden = true;
+    });
+
+    document.getElementById('closeInfoButton').addEventListener('click', () => {
+      infoModal.hidden = true;
+    });
+
+    infoModal.addEventListener('click', (e) => {
+      if (e.target === infoModal) infoModal.hidden = true;
+    });
+
+    // Persistencia de ajustes
+    if (localStorage.getItem('blockSound') !== null) {
+      soundToggle.checked = localStorage.getItem('blockSound') === 'true';
+    }
+    if (localStorage.getItem('blockVibration') !== null) {
+      vibrationToggle.checked = localStorage.getItem('blockVibration') === 'true';
+    }
+    if (localStorage.getItem('blockLang')) {
+      languageSelect.value = localStorage.getItem('blockLang');
+    }
+
+    soundToggle.addEventListener('change', () => {
+      localStorage.setItem('blockSound', String(soundToggle.checked));
+    });
+    vibrationToggle.addEventListener('change', () => {
+      localStorage.setItem('blockVibration', String(vibrationToggle.checked));
+    });
+    languageSelect.addEventListener('change', () => {
+      localStorage.setItem('blockLang', languageSelect.value);
+      updateLevelHeader();
+    });
+
+    window.addEventListener('resize', () => {
+      if (!gameScreen.hidden && currentPieces.length) {
+        renderTray();
+      }
+    });
+  </script>
+</body>
+</html>
